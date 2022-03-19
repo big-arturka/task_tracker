@@ -1,12 +1,11 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework import generics, status, permissions, views
+from rest_framework import status, permissions
 from rest_framework.generics import CreateAPIView
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 
 from .serializers import CustomUserRegisterSerializer
-from .models import CustomUser
 
 
 class RegisterCustomUserView(CreateAPIView):
