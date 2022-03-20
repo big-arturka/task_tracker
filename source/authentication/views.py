@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status, permissions
+from .permissions import RegisterPermission
 from rest_framework.generics import CreateAPIView
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
@@ -10,7 +11,7 @@ from .serializers import CustomUserRegisterSerializer
 
 class RegisterCustomUserView(CreateAPIView):
     model = get_user_model()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [RegisterPermission,]
     serializer_class = CustomUserRegisterSerializer
 
 class LogoutView(APIView):
