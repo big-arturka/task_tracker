@@ -13,7 +13,7 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
     first_name = models.CharField(max_length=255, verbose_name='Name')
-    profile_image = models.ImageField(default='default_profile_image.jpg', blank=True)
+    profile_image = models.ImageField(default='default_profile_image.jpeg', blank=True)
     position = models.CharField(max_length=255)
     telegram_id = models.CharField(max_length=255)
 
