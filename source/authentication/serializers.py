@@ -47,3 +47,30 @@ class CustomUserRegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'first_name', 'profile_image', 'position', 'telegram_id']
+
+    #TODO
+    def update(self, instance, validated_data):
+        instance.email = validated_data.get('email', instance.email)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.profile_image = validated_data.get('profile_image', instance.profile_image)
+        instance.position = validated_data.get('position', instance.position)
+        instance.telegram_id = validated_data.get('telegram_id', instance.telegram_id)
+        instance.save()
+        return instance
+
+class ChangePasswordSerializer(serializers.Serializer):
+
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+
+
