@@ -1,13 +1,9 @@
-from django.shortcuts import render
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
-from rest_framework import status, permissions, views, viewsets
+from rest_framework import status, permissions, viewsets
 from .permissions import IsAdminUserOrReadOnly
-from rest_framework.generics import CreateAPIView
-from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from .models import CustomUser
-from django.shortcuts import get_object_or_404
 from .serializers import CustomUserRegisterSerializer, ChangePasswordSerializer
 from rest_framework.filters import SearchFilter
 
