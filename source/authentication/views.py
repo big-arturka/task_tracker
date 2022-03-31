@@ -1,40 +1,23 @@
 from django.shortcuts import render
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
-from rest_framework import status, permissions, views
-from .permissions import RegisterPermission
+from rest_framework import status, permissions, views, viewsets
+from .permissions import IsAdminUserOrReadOnly
 from rest_framework.generics import CreateAPIView
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from .models import CustomUser
+from django.shortcuts import get_object_or_404
+from .serializers import CustomUserRegisterSerializer, ChangePasswordSerializer
+from rest_framework.filters import SearchFilter
 
-from .serializers import CustomUserRegisterSerializer, ProfileSerializer, ChangePasswordSerializer
 
-
-class RegisterCustomUserView(CreateAPIView):
-    model = get_user_model()
-    permission_classes = [RegisterPermission,]
+class CustomUserModelViewSet(viewsets.ModelViewSet):
     serializer_class = CustomUserRegisterSerializer
-
-class LogoutView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        if user.is_authenticated:
-            user.auth_token.delete()
-        return Response({'Success':'Success'}, status=status.HTTP_200_OK)
-
-class CustomUserModelViewSet(views.APIView):
-
-    def get(self, request, *args, **kwargs):
-        try:
-            print(self.request.user)
-            profile = CustomUser.objects.get(id=request.user.id)
-        except CustomUser.DoesNotExist:
-            return Response({"data":"Profile doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = ProfileSerializer(profile)
-        return Response(serializer.data)
-
+    queryset = CustomUser.objects.all()
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = (IsAdminUserOrReadOnly,)
+    filter_backends = [SearchFilter]
 
 class UpdatePassword(APIView):
 
@@ -55,6 +38,15 @@ class UpdatePassword(APIView):
             self.object.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        if user.is_authenticated:
+            user.auth_token.delete()
+        return Response({'Success':'Success'}, status=status.HTTP_200_OK)
 
 
 

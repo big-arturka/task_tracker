@@ -1,7 +1,11 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAdminUser, AllowAny
 
-class RegisterPermission(BasePermission):
+class IsAdminUserOrReadOnly(IsAdminUser):
 
     def has_permission(self, request, view):
-        if request.method != 'GET':
-            return True
+        return bool(
+            request.method in SAFE_METHODS or request.method == "PATCH" or
+            request.user and
+            request.user.is_superuser
+        )
+
