@@ -2,7 +2,7 @@ import datetime
 from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.response import Response
-from .models import Project, Task
+from .models import Project, Task, Comment
 
 class ProjectSerializer(serializers.ModelSerializer):
     check_date = serializers.SerializerMethodField()
@@ -45,7 +45,15 @@ class TaskSerializer(serializers.ModelSerializer):
                         'project_id':{'required':True}
                         }
 
+class CommentSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = Comment
+        fields = ['text', 'created_date', 'user', 'task_id']
+
+        extra_kwargs = {'text':{'required':True},
+                        'created_date':{'required':False},
+                        'task_id':{'required':True}}
 
 
 
