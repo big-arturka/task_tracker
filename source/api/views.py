@@ -6,8 +6,8 @@ from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdminUserOrReadOnly
-from .models import Project, Task
-from .serializers import ProjectSerializer, TaskSerializer
+from .models import Project, Task, Comment
+from .serializers import ProjectSerializer, TaskSerializer, CommentSerializer
 
 
 class ProjectModelViewSet(viewsets.ModelViewSet):
@@ -25,5 +25,10 @@ class TaskModelViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [SearchFilter]
 
-
+class CommentModelViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all()
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [SearchFilter]
 
