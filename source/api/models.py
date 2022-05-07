@@ -38,6 +38,14 @@ class Task(models.Model):
     users_id = models.ManyToManyField(CustomUser, blank=True)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
 
+class Comment(models.Model):
+    text = models.TextField(max_length=255)
+    created_date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    task_id = models.ForeignKey(Task, on_delete=models.CASCADE)
+
+
+
 
 
 
