@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from .models import Project, Task, Comment
 
+
 class ProjectSerializer(serializers.ModelSerializer):
     check_date = serializers.SerializerMethodField()
 
@@ -28,12 +29,24 @@ class ProjectSerializer(serializers.ModelSerializer):
             obj.save()
         return check_date
 
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ['text', 'created_date', 'user', 'task_id']
+
+        extra_kwargs = {'text':{'required':True},
+                        'created_date':{'required':False},
+                        'task_id':{'required':True}}
+
 class TaskSerializer(serializers.ModelSerializer):
+
+    comments = CommentSerializer(many=True)
 
     class Meta:
         model = Task
         fields = ['name', 'description', 'status', 'priority',
-                  'created_date', 'updated_date', 'deadline', 'users_id', 'project_id']
+                  'created_date', 'updated_date', 'deadline', 'users_id', 'project_id', 'comments']
 
         extra_kwargs = {'name': {'required': True},
                         'description': {'required': False},
@@ -45,15 +58,6 @@ class TaskSerializer(serializers.ModelSerializer):
                         'project_id':{'required':True}
                         }
 
-class CommentSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Comment
-        fields = ['text', 'created_date', 'user', 'task_id']
-
-        extra_kwargs = {'text':{'required':True},
-                        'created_date':{'required':False},
-                        'task_id':{'required':True}}
 
 
 
