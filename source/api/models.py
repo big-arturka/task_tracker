@@ -42,7 +42,16 @@ class Comment(models.Model):
     text = models.TextField(max_length=255)
     created_date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='comments')
-    task_id = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
+    task_id = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, related_name='comments')
+
+class Action(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='author')
+    created_date = models.DateTimeField(auto_now_add=True)
+    text = models.TextField(max_length=255)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True, related_name='project_action')
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, blank=True, related_name='task_action')
+
+
 
 
 
