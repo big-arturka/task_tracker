@@ -1,7 +1,7 @@
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.filters import SearchFilter
 from rest_framework import viewsets, status
-from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from .permissions import IsAdminUserOrReadOnly
 from .models import Project, Task, Comment, Action
 from .serializers import ProjectSerializer, TaskSerializer, CommentSerializer
@@ -51,14 +51,46 @@ class TaskModelViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     queryset = Task.objects.all()
     authentication_classes = [TokenAuthentication,]
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [SearchFilter]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        user = request.user
+        task = serializer.instance
+        text = f"{user.first_name} created task '{task.name}'"
+        action_create(user=user, text=text, task=task)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        partial = True
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        user = request.user
+        task = serializer.instance
+        text = f"{user.first_name} updated task '{task.name}'"
+
+        action_create(user=user, text=text, task=task)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        user = request.user
+        task = self.get_object()
+        text = f"{user.first_name} deleted task '{task.name}'"
+        action_create(user=user, text=text)
+        self.perform_destroy(task)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class CommentModelViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
     authentication_classes = [TokenAuthentication,]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter]
 
