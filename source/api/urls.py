@@ -5,7 +5,7 @@ from .views import ProjectModelViewSet, TaskModelViewSet, CommentModelViewSet
 
 
 router = DefaultRouter()
-router.register(r'^', ProjectModelViewSet, basename='project')
+router.register(r'', ProjectModelViewSet, basename='project')
 router.register(r'^task', TaskModelViewSet, basename='task')
 router.register(r'^comment', CommentModelViewSet, basename='comment')
 
